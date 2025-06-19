@@ -14,7 +14,7 @@ import struct
 
 SAMPLE_FREQUENCY = 2000.0
 SAMPLE_PERIOD = 1.0 / SAMPLE_FREQUENCY
-FRAME_WIDTH_S = 20.0
+FRAME_WIDTH_S = 50.0
 
 HOST = '192.168.0.110'
 PORT = 4061
@@ -233,8 +233,11 @@ class DataCollector:
                         function_code = record[2:4]
 
                         if function_code == b'DA':
-                            fmt = 'h h h h h h H B'  # 這個格式對應於：AccX, AccY, AccZ, GyroX, GyroY, GyroZ, Count, End
-                            if len(record[4:length + 4]) != 15:
+                            if len(record[4:length + 4]) == 15:
+                                fmt = 'h h h h h h H B'  # 這個格式對應於：AccX, AccY, AccZ, GyroX, GyroY, GyroZ, Count, End
+                            elif len(record[4:length + 4]) == 9:
+                                fmt = 'h h h H B'  # 這個格式對應於：AccX, AccY, AccZ, Count, End
+                            else:
                                 print(f'Length Failure, lenhth = {len(record)}, data = {record}')
                                 continue
 
@@ -302,7 +305,7 @@ if __name__ == "__main__":
 
     try:
         while True:
-            time.sleep(10)
+            time.sleep(1)
             print(f'save_to_csv')
             # collector.save_to_csv()
                 
