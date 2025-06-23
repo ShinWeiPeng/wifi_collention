@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>formAaGraphics</class>
+ <widget class="QWidget" name="formAaGraphics">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>739</width>
+    <height>756</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>All Accle </string>
+  </property>
+  <widget class="GraphicsLayoutWidget" name="widgetAaX" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>741</width>
+     <height>251</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="GraphicsLayoutWidget" name="widgetAaY" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>250</y>
+     <width>741</width>
+     <height>251</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="GraphicsLayoutWidget" name="widgetAaZ" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>500</y>
+     <width>741</width>
+     <height>251</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GraphicsLayoutWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
