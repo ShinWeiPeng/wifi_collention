@@ -142,7 +142,6 @@ class GesnsorInstruction:
         
     def write_register(self, reg, data):
         try:
-            fmt = '>B H ' + '<H' + ' I B'
             # 資料對應順序:
             # Start (u8)
             # Function (u16)
@@ -171,7 +170,6 @@ class GesnsorInstruction:
     
     def read_register(self, reg):
         try:
-            fmt = 'B B H H B'
             # 資料對應順序:
             # Start (u8)
             # Function (u16)
@@ -180,16 +178,11 @@ class GesnsorInstruction:
             start_code = 0x02
             end_code = 0x03
             function_code  = (ord('R') << 8) + ord('M')
-                
-            send_data = struct.pack(
-                fmt,
-                start_code,
-                function_code,
-                reg,
-                end_code
-            )
+            
+            part1 = struct.pack('>B H', start_code, function_code)
+            part2 = struct.pack('<H B', reg, end_code)
+            send_data = part1 + part2
         
-            log(f'send_data = {send_data.hex()}')
             self.wifi.sock.send(send_data)
             
             data = self.ack_buf.get(True, GesnsorInstruction.TIME_OUT)

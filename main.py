@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QFileDialog
 from plot_raw import FormGraphicsPlotRaw
 from plot_aa import FormGraphicsPlotAa
 import threading
-
+import time
 
 class MainWindow(QtWidgets.QMainWindow):
  
@@ -39,8 +39,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data_src = self.ui.cbbDataSrc.currentIndex()
         self.freq = 2000.0
         self.sample_period = 1.0 / self.freq
-        self.file_path = "./imu_data.csv"
-        
+        timestr = time.strftime('%Y%m%d_%H%M%S')
+        self.file_path = f'./save_data/{timestr}.csv'
+        self.ui.lblSavePath.setText(self.file_path)
         self.is_connect = False
         
         self.lock = threading.Lock()
@@ -59,6 +60,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.wifi.sock:
             self.ui.lblConnectState.setStyleSheet('color: green')
             self.is_connect = True
+            version_code = self.instruction.read_register(GesnsorInstruction.GsenAddress.EGA_VERSION.value)
+            main_ver = (version_code >> 16) & 0xFFFF
+            sub_ver  = (version_code >> 8) & 0xFF
+            test_ver = version_code & 0xFF
+            version = main_ver + sub_ver / 1000.0 + test_ver / 1000000.0
+            self.ui.lblVersion.setText('Version: ' + str(version))     
         
     def btnStart_clicked(self):
         if self.wifi.sock == None:
@@ -90,9 +97,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.collector_thread.join()
         
     def btnbtnSaveForder_clicked(self):
+        timestr = time.strftime('%Y%m%d_%H%M%S')
         self.file_path, _ = QFileDialog.getSaveFileName(self, 
             "Save File", 
-            "./imu_data.csv",          # 預設檔案名
+            f"./save_data/{timestr}.csv",          # 預設檔案名
             "CSV Files (*.csv);;All Files (*)")   # 檔案過濾器
         self.ui.lblSavePath.setText(self.file_path)
         

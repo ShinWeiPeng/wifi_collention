@@ -85,6 +85,11 @@ class DataCollector:
         while True:
             try:
                 time.sleep(0.05)
+                
+                folder_path = os.path.dirname(self.file_path)
+                if not os.path.exists(folder_path):
+                    os.makedirs(folder_path)
+                    
                 file_exists = os.path.exists(self.file_path)
                 with open(self.file_path, mode='a', newline='') as file:
                     writer = csv.writer(file)
