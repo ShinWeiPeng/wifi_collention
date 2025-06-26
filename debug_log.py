@@ -14,9 +14,8 @@ def log(*args, sep=' ', end='\n'):
     lineno = frame.f_lineno
     funcname = frame.f_code.co_name
 
-    # 取得目前時間（到毫秒）
     timestr = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]  # 切掉最後3位，變成毫秒
 
-    prefix = f"[{timestr}] [{filename}:{lineno} {funcname}]"
+    prefix = f"[{timestr}] [{filename}:{lineno}] {funcname}()"
 
     print(prefix, *args, sep=sep, end=end)

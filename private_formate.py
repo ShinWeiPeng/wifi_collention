@@ -7,7 +7,7 @@ from enum import Enum
 import time
 
 class GesnsorInstruction:
-    TIME_OUT = 3
+    TIME_OUT = 5
     START_CODE = 0x02
     END_CODE = 0x03
     
@@ -38,9 +38,13 @@ class GesnsorInstruction:
     def split_data(self):
         i = 0
         pass_records = []
-        
-        while i < len(self.data):
+
+        while True:
             try:
+                if i >= len(self.data):
+                    self.data = bytearray()
+                    break
+                
                 if self.data[i] != GesnsorInstruction.START_CODE:
                     i += 1
                     continue
@@ -61,11 +65,11 @@ class GesnsorInstruction:
                     log(f'data = {self.data[i:i + length]}')
                     i += 1
                     
-            except Exception:
+            except Exception as e:
+                # log(f'{e}, data = {self.data[i:]}, i = {i}, len = {len(self.data)}')
                 self.data = self.data[i:]
-                log(f'data = {self.data[i:]}')
                 break
-            
+
         return pass_records
     
     def enent_display(self):
@@ -112,7 +116,8 @@ class GesnsorInstruction:
     def start(self):
         try:
             send_data = bytes([GesnsorInstruction.START_CODE, ord('S'), ord('T'), GesnsorInstruction.END_CODE])
-            self.wifi.sock.send(send_data)
+
+            self.wifi.write_data(send_data)
 
             data = self.ack_buf.get(True, GesnsorInstruction.TIME_OUT)
             fmt = 'B B H B'  # 這個格式對應於：Start, Len, function, End
@@ -127,7 +132,8 @@ class GesnsorInstruction:
     def stop(self):
         try:
             send_data = bytes([GesnsorInstruction.START_CODE, ord('E'), ord('D'), GesnsorInstruction.END_CODE])
-            self.wifi.sock.send(send_data)
+
+            self.wifi.write_data(send_data)
             
             data = self.ack_buf.get(True, GesnsorInstruction.TIME_OUT)
             fmt = 'B B H B'  # 這個格式對應於：Start, Len, function, End
@@ -156,7 +162,7 @@ class GesnsorInstruction:
             part2 = struct.pack('<H I B', reg, data, end_code)
             send_data = part1 + part2
 
-            self.wifi.sock.send(send_data)
+            self.wifi.write_data(send_data)
             
             data = self.ack_buf.get(True, GesnsorInstruction.TIME_OUT)
             fmt = 'B B H B'  # 這個格式對應於：Start, Len, function, End
@@ -182,8 +188,8 @@ class GesnsorInstruction:
             part1 = struct.pack('>B H', start_code, function_code)
             part2 = struct.pack('<H B', reg, end_code)
             send_data = part1 + part2
-        
-            self.wifi.sock.send(send_data)
+
+            self.wifi.write_data(send_data)
             
             data = self.ack_buf.get(True, GesnsorInstruction.TIME_OUT)
             fmt = 'B B H I B'
@@ -194,14 +200,38 @@ class GesnsorInstruction:
             # Data (u32)
             # End (u8)
             unpacked = struct.unpack(fmt, data)
-            function_code, data = unpacked[2:4]
+            function_code, return_data = unpacked[2:4]
             
             if function_code != ((ord('M') << 8) + ord('R')):
                 log('Ack Fail')
             else:
-                log(f'data = {data}')
-                return data
+                return return_data
                 
+        except Exception as e:
+            log(f"Exception: {e}")
+            return None
+    
+                
+    def is_send_finish(self):
+        return self.wifi.send_buf.empty()
+    
+    def write_accel_raw(self, acc_x, acc_y, acc_z):
+        try:
+            # 資料對應順序:
+            # Start (u8)
+            # Function (u16)
+            # Accel X (s16)
+            # Accel Y (s16)
+            # Accel Z (s16)
+            # End (u8)
+            start_code = GesnsorInstruction.START_CODE
+            end_code = GesnsorInstruction.END_CODE
+            function_code  = ((ord('D') << 8) + ord('A'))
+            part1 = struct.pack('>B H', start_code, function_code)
+            part2 = struct.pack('h h h B', acc_x, acc_y, acc_z, end_code)
+            send_data = part1 + part2
+            self.wifi.write_data(send_data)
+
         except Exception as e:
             log(f"Exception: {e}")
             

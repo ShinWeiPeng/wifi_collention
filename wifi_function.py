@@ -5,7 +5,7 @@ from debug_log import log
 import queue
 
 class WifiFunction:
-    MAX_TIME_OUT = 3
+    MAX_TIME_OUT = 0.1
     
     def __init__(self, host, port):
         self.is_connect = False
@@ -48,6 +48,7 @@ class WifiFunction:
                     continue
                 
                 data = self.sock.recv(4096)
+                # print([f'{b:02X}' for b in data])
                 if len(data) > 0:
                     self.read_buf.put(data, True, WifiFunction.MAX_TIME_OUT)
                 time.sleep(0.01)
@@ -55,13 +56,31 @@ class WifiFunction:
             except Exception as e:
                 log(f'{e}')
                 break
-            
+        
     def send_process(self):
         while True:
+            data = bytearray()
             try:
-                data = self.send_buf.get(True, None)
-                self.sock.send(data)
+                # Collect as many packets as possible within ~5ms
+                start_time = time.time()
+
+                while True:
+                    try:
+                        temp = self.send_buf.get(timeout=0.01)
+
+                        if isinstance(temp, (bytes, bytearray)):
+                            data += temp
+
+                        if len(data) > 500:
+                            break
+
+                    except queue.Empty:
+                        break
+
+                if len(data) > 0:
+                    self.sock.send(data)
+                    # log(f"Send {len(data)} bytes")
+
             except Exception as e:
-                log(f'{e}')
-                break
-        
+                log(f'Send Error: {e}')
+                time.sleep(0.1)
