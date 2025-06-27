@@ -53,24 +53,34 @@ class WifiFunction:
                     self.read_buf.put(data, True, WifiFunction.MAX_TIME_OUT)
                 time.sleep(0.01)
 
-            except Exception as e:
-                log(f'{e}')
+            except socket.timeout:
+                log("接收超時")
+                
+            except ConnectionResetError:
+                log("連線被對方強制關閉 (RST)")
+                break
+            
+            except ConnectionAbortedError:
+                log("連線被本地或中間設備中止")
+                break
+            
+            except OSError as e:
+                log(f"其他 socket 錯誤: {e}")
                 break
         
     def send_process(self):
         while True:
             data = bytearray()
             try:
-                # Collect as many packets as possible within ~5ms
-                start_time = time.time()
-
                 while True:
+                    if self.sock ==  None:
+                        break
                     try:
                         temp = self.send_buf.get(timeout=0.01)
-
-                        if isinstance(temp, (bytes, bytearray)):
-                            data += temp
-
+                        data += temp
+                        # if isinstance(temp, (bytes, bytearray)):
+                        #     data += temp
+                        
                         if len(data) > 500:
                             break
 
@@ -81,6 +91,8 @@ class WifiFunction:
                     self.sock.send(data)
                     # log(f"Send {len(data)} bytes")
 
-            except Exception as e:
-                log(f'Send Error: {e}')
-                time.sleep(0.1)
+            except OSError as e:
+                if e.winerror == 10038:
+                    print("嘗試對非 socket 的對象做操作（可能已關閉或是變數錯誤）")
+                else:
+                    print(f"其他 OSError: {e}")

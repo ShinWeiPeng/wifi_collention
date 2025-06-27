@@ -17,7 +17,6 @@ class SimulateCsv:
             count = 0
             
             for row in reader:
-                count += 1
                 try:
                     ax, ay, az = row[1:4]
                     ax = int(float(ax) * 8192)
@@ -27,16 +26,24 @@ class SimulateCsv:
                     # ay = int(ay)
                     # az = int(az)
 
-                    self.instruction.write_accel_raw(ax, ay, az)
+                    self.instruction.write_accel_raw(ax, ay, az, count)
+                    
+                    count += 1
+                    
+                    if (count % 5 == 0):
+                        time.sleep(0.001)
+                        
+                    if count >= 10000:
+                        count = 0
                     
                 except Exception as e:
                     log(f"{e}")
                     break
+                
         while self.instruction.is_send_finish() == False:
             time.sleep(0.01)  
             
         log(f"Transmit finished! count = {count}")
-        self.instruction.stop()
         self.is_finish = True
     
     def start_transmit_data(self):

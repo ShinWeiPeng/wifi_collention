@@ -215,7 +215,7 @@ class GesnsorInstruction:
     def is_send_finish(self):
         return self.wifi.send_buf.empty()
     
-    def write_accel_raw(self, acc_x, acc_y, acc_z):
+    def write_accel_raw(self, acc_x, acc_y, acc_z, cnt):
         try:
             # 資料對應順序:
             # Start (u8)
@@ -228,7 +228,7 @@ class GesnsorInstruction:
             end_code = GesnsorInstruction.END_CODE
             function_code  = ((ord('D') << 8) + ord('A'))
             part1 = struct.pack('>B H', start_code, function_code)
-            part2 = struct.pack('h h h B', acc_x, acc_y, acc_z, end_code)
+            part2 = struct.pack('h h h H B', acc_x, acc_y, acc_z, cnt, end_code)
             send_data = part1 + part2
             self.wifi.write_data(send_data)
 

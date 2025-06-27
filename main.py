@@ -99,6 +99,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 self.ui.lblVersion.setText(version_str)
             else:
+                self.wifi.sock.close()
                 self.wifi.sock = None
                 log(f'Connect Fail')
         
@@ -187,6 +188,7 @@ class MainWindow(QtWidgets.QMainWindow):
             
         self.collector.is_collecting = False
         self.collector.save_csv_handle.join()
+        self.instruction.stop()
             
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
