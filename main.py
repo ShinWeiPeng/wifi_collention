@@ -188,6 +188,7 @@ class MainWindow(QtWidgets.QMainWindow):
             
         self.collector.is_collecting = False
         self.collector.save_csv_handle.join()
+        self.collector_thread.join()
         self.instruction.stop()
             
 if __name__ == '__main__':
