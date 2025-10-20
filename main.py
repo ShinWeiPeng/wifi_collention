@@ -14,6 +14,7 @@ from enum import Enum
 from debug_log import log
 import os
 import math
+import queue
 
 class MainWindow(QtWidgets.QMainWindow):
     class GsenDataSrc(Enum):
@@ -185,10 +186,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def monitor_simulate_csv(self):
         while self.simulate_csv.is_finish == False:
             time.sleep(0.1)
-            
+
         self.collector.is_collecting = False
         self.collector.save_csv_handle.join()
-        self.collector_thread.join()
         self.instruction.stop()
             
 if __name__ == '__main__':

@@ -92,7 +92,7 @@ class GesnsorInstruction:
                 if not self.data:
                     log(f'no data')
                     continue
-                
+
                 records = self.split_data()
                 
                 for record in records:
@@ -213,7 +213,7 @@ class GesnsorInstruction:
     
                 
     def is_send_finish(self):
-        return self.wifi.send_buf.empty()
+        return self.wifi.read_buf.empty()
     
     def write_accel_raw(self, acc_x, acc_y, acc_z, cnt):
         try:
