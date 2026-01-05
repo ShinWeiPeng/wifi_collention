@@ -204,17 +204,32 @@
          </property>
          <item>
           <property name="text">
-           <string>1k Hz</string>
+           <string>25</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>2k Hz</string>
+           <string>100</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>4k Hz</string>
+           <string>500</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>4000</string>
           </property>
          </item>
         </widget>
@@ -304,7 +319,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Sample Rate</string>
+          <string>Sample Rate (Hz)</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

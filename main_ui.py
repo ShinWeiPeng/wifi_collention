@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\main.ui'
+# Form implementation generated from reading ui file 'main.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -94,6 +94,9 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.cbbSampleRate.setFont(font)
         self.cbbSampleRate.setObjectName("cbbSampleRate")
+        self.cbbSampleRate.addItem("")
+        self.cbbSampleRate.addItem("")
+        self.cbbSampleRate.addItem("")
         self.cbbSampleRate.addItem("")
         self.cbbSampleRate.addItem("")
         self.cbbSampleRate.addItem("")
@@ -294,14 +297,17 @@ class Ui_MainWindow(object):
         self.cbbDataSrc.setItemText(1, _translate("MainWindow", "IMU CSV"))
         self.cbbDataSrc.setItemText(2, _translate("MainWindow", "CSV"))
         self.txtFrameWidth.setText(_translate("MainWindow", "30"))
-        self.cbbSampleRate.setItemText(0, _translate("MainWindow", "1k Hz"))
-        self.cbbSampleRate.setItemText(1, _translate("MainWindow", "2k Hz"))
-        self.cbbSampleRate.setItemText(2, _translate("MainWindow", "4k Hz"))
+        self.cbbSampleRate.setItemText(0, _translate("MainWindow", "25"))
+        self.cbbSampleRate.setItemText(1, _translate("MainWindow", "100"))
+        self.cbbSampleRate.setItemText(2, _translate("MainWindow", "500"))
+        self.cbbSampleRate.setItemText(3, _translate("MainWindow", "1000"))
+        self.cbbSampleRate.setItemText(4, _translate("MainWindow", "2000"))
+        self.cbbSampleRate.setItemText(5, _translate("MainWindow", "4000"))
         self.lblMode.setText(_translate("MainWindow", "Mode:"))
         self.lblEnvelopeInterval.setText(_translate("MainWindow", "Envelope Interval"))
         self.lblDataSrc.setText(_translate("MainWindow", "Data Source"))
         self.lblFrameWidth.setText(_translate("MainWindow", "Frame Width (s)"))
-        self.lblSampleRate.setText(_translate("MainWindow", "Sample Rate"))
+        self.lblSampleRate.setText(_translate("MainWindow", "Sample Rate (Hz)"))
         self.btnShow.setText(_translate("MainWindow", "Show"))
         self.lblVersion.setText(_translate("MainWindow", "Version:"))
         self.btnGetCSV.setText(_translate("MainWindow", "Simualte CSV Forder"))
@@ -318,3 +324,13 @@ class Ui_MainWindow(object):
         self.btnWrite.setText(_translate("MainWindow", "Write"))
         self.btnRead.setText(_translate("MainWindow", "Read"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Instruction), _translate("MainWindow", "Instruction"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

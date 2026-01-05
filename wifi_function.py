@@ -1,3 +1,4 @@
+# wifi_function.py
 import time
 import threading
 import socket
@@ -6,7 +7,7 @@ import queue
 
 class WifiFunction:
     MAX_TIME_OUT = 0.1
-    
+
     def __init__(self, host, port):
         self.is_connect = False
         self.sock = None
@@ -14,9 +15,11 @@ class WifiFunction:
         self.port = port
         self.send_buf = queue.Queue()
         self.read_buf = queue.Queue()
-        self.send_process_handle = threading.Thread(target=self.send_process, daemon=True).start()
-        self.received_process_handle = threading.Thread(target=self.received_process, daemon=True).start() 
-    
+        self.send_process_handle = threading.Thread(target=self.send_process, daemon=True)
+        self.received_process_handle = threading.Thread(target=self.received_process, daemon=True)
+        self.send_process_handle.start()
+        self.received_process_handle.start()
+
     def connect(self):
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,23 +33,24 @@ class WifiFunction:
             log(f'{e}')
             self.sock = None
             self.is_connect = False
-        
+
     def write_data(self, data):
         try:
             self.send_buf.put(data, True, WifiFunction.MAX_TIME_OUT)
         except Exception as e:
             log(f'{e}')
-        
+
     def read_data(self):
         data = self.read_buf.get()
         return data
-        
+
     def received_process(self):
         while True:
             try:
-                if self.is_connect == False:
+                if (self.is_connect == False) or (self.sock is None):
+                    time.sleep(0.05)
                     continue
-                
+
                 data = self.sock.recv(4096)
                 # print([f'{b:02X}' for b in data])
                 if len(data) > 0:
@@ -55,19 +59,19 @@ class WifiFunction:
 
             except socket.timeout:
                 log("接收超時")
-                
+
             except ConnectionResetError:
                 log("連線被對方強制關閉 (RST)")
                 break
-            
+
             except ConnectionAbortedError:
                 log("連線被本地或中間設備中止")
                 break
-            
+
             except OSError as e:
                 log(f"其他 socket 錯誤: {e}")
                 break
-        
+
     def send_process(self):
         while True:
             data = bytearray()
@@ -80,7 +84,7 @@ class WifiFunction:
                         data += temp
                         # if isinstance(temp, (bytes, bytearray)):
                         #     data += temp
-                        
+
                         if len(data) > 500:
                             break
 
